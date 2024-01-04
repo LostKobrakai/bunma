@@ -366,6 +366,7 @@ defmodule BunmaWeb.CoreComponents do
   # All other inputs text, datetime-local, url, password, etc. are handled here...
   def input(assigns) do
     # Handle phx-no-feedback
+
     ~H"""
     <div class="field" phx-feedback-for={@name}>
       <.label for={@id}><%= @label %></.label>
@@ -375,8 +376,7 @@ defmodule BunmaWeb.CoreComponents do
         id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "input",
-          "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400",
+          "input is-phx-no-feedback",
           @errors != [] && "is-danger"
         ]}
         {@rest}
@@ -407,7 +407,7 @@ defmodule BunmaWeb.CoreComponents do
 
   def error(assigns) do
     ~H"""
-    <p class="help is-danger mt-2">
+    <p class="help is-danger mt-2 is-phx-no-feedback">
       <.icon name="fa-exclamation-circle" size="small" />
       <%= render_slot(@inner_block) %>
     </p>
