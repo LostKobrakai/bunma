@@ -25,7 +25,12 @@ config :bunma, BunmaWeb.Endpoint,
   debug_errors: true,
   secret_key_base: "xeYH8Z8d6ueYTDA6ToZCdzLWDDsf4mqgQhJRoVRWEuoJVLxOGPQAepMWRoaMH2X8",
   watchers: [
-    bun: {Bun, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]}
+    bun: {Bun, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
+    sass: {
+      DartSass,
+      :install_and_run,
+      [:default, ~w(--embed-source-map --source-map-urls=absolute --watch)]
+    }
   ]
 
 # ## SSL Support

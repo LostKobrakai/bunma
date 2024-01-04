@@ -41,6 +41,19 @@ config :bun,
     env: %{}
   ]
 
+# Configure dart_sass (the version is required)
+config :dart_sass,
+  version: "1.69.7",
+  default: [
+    args: [
+      "--load-path=node_modules/bulma",
+      "--load-path=node_modules/@fortawesome/fontawesome-free/scss",
+      "css/app.scss",
+      "../priv/static/assets/app.css"
+    ],
+    cd: Path.expand("../assets", __DIR__)
+  ]
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

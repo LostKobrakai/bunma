@@ -50,7 +50,8 @@ defmodule Bunma.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
       {:plug_cowboy, "~> 2.5"},
-      {:bun, "~> 1.0", runtime: Mix.env() == :dev}
+      {:bun, "~> 1.0", runtime: Mix.env() == :dev},
+      {:dart_sass, "~> 0.6", runtime: Mix.env() == :dev}
     ]
   end
 
@@ -66,9 +67,13 @@ defmodule Bunma.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      "assets.setup": ["bun.install --if-missing"],
-      "assets.build": ["bun default"],
-      "assets.deploy": ["bun default --minify", "phx.digest"]
+      "assets.setup": ["bun.install --if-missing", "sass.install --if-missing"],
+      "assets.build": ["bun default", "sass default"],
+      "assets.deploy": [
+        "bun default --minify",
+        "sass default --no-source-map --style=compressed",
+        "phx.digest"
+      ]
     ]
   end
 end

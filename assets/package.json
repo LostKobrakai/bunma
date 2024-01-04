@@ -3,7 +3,8 @@
     "../deps/*"
   ],
   "dependencies": {
-    "heroicons": "^2.1.1",
+    "@fortawesome/fontawesome-free": "5.15.4",
+    "bulma": "^0.9.4",
     "phoenix": "workspace:*",
     "phoenix_html": "workspace:*",
     "phoenix_live_view": "workspace:*",
