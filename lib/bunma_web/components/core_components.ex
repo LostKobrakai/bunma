@@ -232,9 +232,8 @@ defmodule BunmaWeb.CoreComponents do
   slot :inner_block, required: true
 
   def button(assigns) do
-    # TODO support phx-submit-loading
     ~H"""
-    <button type={@type} class={["button", @class]} {@rest}>
+    <button type={@type} class={["button is-phx-submit-loading", @class]} {@rest}>
       <%= render_slot(@inner_block) %>
     </button>
     """
