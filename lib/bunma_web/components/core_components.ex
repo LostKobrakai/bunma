@@ -112,24 +112,30 @@ defmodule BunmaWeb.CoreComponents do
     <div
       :if={msg = render_slot(@inner_block) || Phoenix.Flash.get(@flash, @kind)}
       id={@id}
-      phx-click={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
       role="alert"
       class={[
-        "fixed top-2 right-2 mr-2 w-80 sm:w-96 z-50 rounded-lg p-3 ring-1",
-        @kind == :info && "bg-emerald-50 text-emerald-800 ring-emerald-500 fill-cyan-900",
-        @kind == :error && "bg-rose-50 text-rose-900 shadow-md ring-rose-500 fill-rose-900"
+        "notification",
+        @kind == :info && "is-info",
+        @kind == :error && "is-danger"
       ]}
       {@rest}
     >
-      <p :if={@title} class="flex items-center gap-1.5 text-sm font-semibold leading-6">
-        <.icon :if={@kind == :info} name="hero-information-circle-mini" class="h-4 w-4" />
-        <.icon :if={@kind == :error} name="hero-exclamation-circle-mini" class="h-4 w-4" />
-        <%= @title %>
-      </p>
-      <p class="mt-2 text-sm leading-5"><%= msg %></p>
-      <button type="button" class="group absolute top-1 right-1 p-2" aria-label={gettext("close")}>
-        <.icon name="hero-x-mark-solid" class="h-5 w-5 opacity-40 group-hover:opacity-70" />
+      <button
+        type="button"
+        class="delete"
+        phx-click={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
+        aria-label={gettext("close")}
+      >
       </button>
+      <div :if={@title} class="icon-text">
+        <.icon :if={@kind == :info} name="fa-info-circle" class="has-text-white" />
+        <.icon :if={@kind == :error} name="fa-ban" class="has-text-white" />
+        <span><%= @title %></span>
+      </div>
+
+      <p class="block">
+        <%= msg %>
+      </p>
     </div>
     """
   end
@@ -157,7 +163,7 @@ defmodule BunmaWeb.CoreComponents do
         phx-connected={hide("#client-error")}
         hidden
       >
-        Attempting to reconnect <.icon name="hero-arrow-path" class="ml-1 h-3 w-3 animate-spin" />
+        Attempting to reconnect <.icon name="fa-sync" class="ml-1" spin size="small" />
       </.flash>
 
       <.flash
@@ -169,7 +175,7 @@ defmodule BunmaWeb.CoreComponents do
         hidden
       >
         Hang in there while we get back on track
-        <.icon name="hero-arrow-path" class="ml-1 h-3 w-3 animate-spin" />
+        <.icon name="fa-sync" class="ml-1" spin size="small" />
       </.flash>
     </div>
     """
@@ -226,16 +232,9 @@ defmodule BunmaWeb.CoreComponents do
   slot :inner_block, required: true
 
   def button(assigns) do
+    # TODO support phx-submit-loading
     ~H"""
-    <button
-      type={@type}
-      class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3",
-        "text-sm font-semibold leading-6 text-white active:text-white/80",
-        @class
-      ]}
-      {@rest}
-    >
+    <button type={@type} class={["button", @class]} {@rest}>
       <%= render_slot(@inner_block) %>
     </button>
     """
@@ -367,8 +366,9 @@ defmodule BunmaWeb.CoreComponents do
 
   # All other inputs text, datetime-local, url, password, etc. are handled here...
   def input(assigns) do
+    # Handle phx-no-feedback
     ~H"""
-    <div phx-feedback-for={@name}>
+    <div class="field" phx-feedback-for={@name}>
       <.label for={@id}><%= @label %></.label>
       <input
         type={@type}
@@ -376,10 +376,9 @@ defmodule BunmaWeb.CoreComponents do
         id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
+          "input",
           "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400",
-          @errors == [] && "border-zinc-300 focus:border-zinc-400",
-          @errors != [] && "border-rose-400 focus:border-rose-400"
+          @errors != [] && "is-danger"
         ]}
         {@rest}
       />
@@ -396,7 +395,7 @@ defmodule BunmaWeb.CoreComponents do
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800">
+    <label for={@for} class="label">
       <%= render_slot(@inner_block) %>
     </label>
     """
@@ -409,8 +408,8 @@ defmodule BunmaWeb.CoreComponents do
 
   def error(assigns) do
     ~H"""
-    <p class="mt-3 flex gap-3 text-sm leading-6 text-rose-600 phx-no-feedback:hidden">
-      <.icon name="hero-exclamation-circle-mini" class="mt-0.5 h-5 w-5 flex-none" />
+    <p class="help is-danger mt-2">
+      <.icon name="fa-exclamation-circle" size="small" />
       <%= render_slot(@inner_block) %>
     </p>
     """
@@ -427,16 +426,18 @@ defmodule BunmaWeb.CoreComponents do
 
   def header(assigns) do
     ~H"""
-    <header class={[@actions != [] && "flex items-center justify-between gap-6", @class]}>
-      <div>
-        <h1 class="text-lg font-semibold leading-8 text-zinc-800">
-          <%= render_slot(@inner_block) %>
-        </h1>
-        <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-zinc-600">
-          <%= render_slot(@subtitle) %>
-        </p>
+    <header class={["level", @class]}>
+      <!-- Left side -->
+      <div class="level-left">
+        <div>
+          <h1 class="title"><%= render_slot(@inner_block) %></h1>
+          <h2 :if={@subtitle != []} class="subtitle"><%= render_slot(@subtitle) %></h2>
+        </div>
       </div>
-      <div class="flex-none"><%= render_slot(@actions) %></div>
+      <!-- Right side -->
+      <div class="level-right">
+        <%= render_slot(@actions) %>
+      </div>
     </header>
     """
   end
@@ -473,40 +474,30 @@ defmodule BunmaWeb.CoreComponents do
       end
 
     ~H"""
-    <div class="overflow-y-auto px-4 sm:overflow-visible sm:px-0">
-      <table class="w-[40rem] mt-11 sm:w-full">
-        <thead class="text-sm text-left leading-6 text-zinc-500">
+    <div class="table-container">
+      <table class="table table is-striped is-hoverable is-fullwidth">
+        <thead class="is-size-6">
           <tr>
-            <th :for={col <- @col} class="p-0 pb-4 pr-6 font-normal"><%= col[:label] %></th>
-            <th :if={@action != []} class="relative p-0 pb-4">
-              <span class="sr-only"><%= gettext("Actions") %></span>
-            </th>
+            <th :for={col <- @col}><%= col[:label] %></th>
+            <th :if={@action != []}><span class="is-sr-only"><%= gettext("Actions") %></span></th>
           </tr>
         </thead>
-        <tbody
-          id={@id}
-          phx-update={match?(%Phoenix.LiveView.LiveStream{}, @rows) && "stream"}
-          class="relative divide-y divide-zinc-100 border-t border-zinc-200 text-sm leading-6 text-zinc-700"
-        >
-          <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="group hover:bg-zinc-50">
+        <tbody id={@id} phx-update={match?(%Phoenix.LiveView.LiveStream{}, @rows) && "stream"}>
+          <tr :for={row <- @rows} id={@row_id && @row_id.(row)}>
             <td
               :for={{col, i} <- Enum.with_index(@col)}
               phx-click={@row_click && @row_click.(row)}
-              class={["relative p-0", @row_click && "hover:cursor-pointer"]}
+              class={[@row_click && "is-clickable"]}
             >
-              <div class="block py-4 pr-6">
-                <span class="absolute -inset-y-px right-0 -left-4 group-hover:bg-zinc-50 sm:rounded-l-xl" />
-                <span class={["relative", i == 0 && "font-semibold text-zinc-900"]}>
-                  <%= render_slot(col, @row_item.(row)) %>
-                </span>
-              </div>
+              <span class={[i == 0 && "has-text-weight-semibold has-text-black"]}>
+                <%= render_slot(col, @row_item.(row)) %>
+              </span>
             </td>
-            <td :if={@action != []} class="relative w-14 p-0">
-              <div class="relative whitespace-nowrap py-4 text-right text-sm font-medium">
-                <span class="absolute -inset-y-px -right-4 left-0 group-hover:bg-zinc-50 sm:rounded-r-xl" />
+            <td :if={@action != []} class="is-1 p-0">
+              <div class="py-2 has-text-right is-size-7">
                 <span
                   :for={action <- @action}
-                  class="relative ml-4 font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
+                  class="ml-4 has-text-weight-semibold leading-6 has-text-black"
                 >
                   <%= render_slot(action, @row_item.(row)) %>
                 </span>
@@ -559,11 +550,8 @@ defmodule BunmaWeb.CoreComponents do
   def back(assigns) do
     ~H"""
     <div class="mt-16">
-      <.link
-        navigate={@navigate}
-        class="text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
-      >
-        <.icon name="hero-arrow-left-solid" class="h-3 w-3" />
+      <.link navigate={@navigate} class="is-size-7 has-text-weight-semibold has-text-black">
+        <.icon name="fa-arrow-left" size="small" />
         <%= render_slot(@inner_block) %>
       </.link>
     </div>
@@ -587,13 +575,33 @@ defmodule BunmaWeb.CoreComponents do
 
       <.icon name="hero-x-mark-solid" />
       <.icon name="hero-arrow-path" class="ml-1 w-3 h-3 animate-spin" />
+
   """
   attr :name, :string, required: true
   attr :class, :string, default: nil
+  attr :spin, :boolean, default: false
+  attr :size, :string, default: "normal", values: ["small", "normal", "large"]
 
   def icon(%{name: "hero-" <> _} = assigns) do
     ~H"""
     <span class={[@name, @class]} />
+    """
+  end
+
+  def icon(%{name: "fa-" <> _} = assigns) do
+    {bulma_size, fa_size} =
+      case assigns.size do
+        "small" -> {"is-small", "fa-sm"}
+        "normal" -> {nil, nil}
+        "normal" -> {"is-medium", "fa-lg"}
+      end
+
+    assigns = assign(assigns, bulma_size: bulma_size, fa_size: fa_size)
+
+    ~H"""
+    <span class={["icon", @bulma_size, @class]}>
+      <i class={["fas", @name, @fa_size, @spin && "fa-spin"]}></i>
+    </span>
     """
   end
 
