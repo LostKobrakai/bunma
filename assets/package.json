@@ -1,0 +1,12 @@
+{
+  "workspaces": [
+    "../deps/*"
+  ],
+  "dependencies": {
+    "heroicons": "^2.1.1",
+    "phoenix": "workspace:*",
+    "phoenix_html": "workspace:*",
+    "phoenix_live_view": "workspace:*",
+    "topbar": "^2.0.2"
+  }
+}

@@ -25,8 +25,7 @@ config :bunma, BunmaWeb.Endpoint,
   debug_errors: true,
   secret_key_base: "xeYH8Z8d6ueYTDA6ToZCdzLWDDsf4mqgQhJRoVRWEuoJVLxOGPQAepMWRoaMH2X8",
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
+    bun: {Bun, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]}
   ]
 
 # ## SSL Support

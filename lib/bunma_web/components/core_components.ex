@@ -75,7 +75,7 @@ defmodule BunmaWeb.CoreComponents do
                   class="-m-3 flex-none p-3 opacity-20 hover:opacity-40"
                   aria-label={gettext("close")}
                 >
-                  <.icon name="hero-x-mark-solid" class="h-5 w-5" />
+                  <.icon name="fa-times" />
                 </button>
               </div>
               <div id={"#{@id}-content"}>
@@ -573,8 +573,8 @@ defmodule BunmaWeb.CoreComponents do
 
   ## Examples
 
-      <.icon name="hero-x-mark-solid" />
-      <.icon name="hero-arrow-path" class="ml-1 w-3 h-3 animate-spin" />
+      <.icon name="fa-times" />
+      <.icon name="fa-sync" spin size="small" class="ml-1" />
 
   """
   attr :name, :string, required: true
@@ -582,18 +582,12 @@ defmodule BunmaWeb.CoreComponents do
   attr :spin, :boolean, default: false
   attr :size, :string, default: "normal", values: ["small", "normal", "large"]
 
-  def icon(%{name: "hero-" <> _} = assigns) do
-    ~H"""
-    <span class={[@name, @class]} />
-    """
-  end
-
   def icon(%{name: "fa-" <> _} = assigns) do
     {bulma_size, fa_size} =
       case assigns.size do
         "small" -> {"is-small", "fa-sm"}
         "normal" -> {nil, nil}
-        "normal" -> {"is-medium", "fa-lg"}
+        "large" -> {"is-medium", "fa-lg"}
       end
 
     assigns = assign(assigns, bulma_size: bulma_size, fa_size: fa_size)
